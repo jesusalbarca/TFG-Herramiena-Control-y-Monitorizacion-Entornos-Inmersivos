@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <title>Mostrar servicios</title>
+    <style>
+        .container{
+            max-width: 1250px;
+        }
+        .ajustesServiceChoose{
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .ajustesSelectgrpc{
+            margin-left: 15px;
+            margin-right: 10px;
+        }
+        .ajustesAllatributes{
+            margin-left: 19px;
+            margin-right: 19px;
+
+        }
+
+        
+       
+       
+    </style>
+</head>
+  <body>
+
+    <div class="container">
+        <h1>Ejecuta tus Servicios!</h1>
+        <div id="div_principal" class="shadow-lg pb-3 mb-10 bg-body rounded ajustes">
+            <form action="/ejecuteService" method="POST">
+                <h2>Elige el servicio a utilizar</h2>
+               
+                <div id="AllSelect">
+                    <div id="ElegirServicio" class="d-grid gap-2 ajustesServiceChoose">
+                        <select onchange="mostrarGrpcs()" name="ServiceChoose" style="display:block;" id="ServiceChoose" class="form-select" aria-label="Default select example"  required>
+                            <option value="noyet" selected="selected">Choose a service</option>
+                            <% servicios.forEach( (servicio) => { %>
+                                <option value='<%= servicio.name %>' required><%=servicio.name %></option>
+                            <%  })%>
+                        </select>     
+                    </div>
+                    <h2 style="display:none;" id="TituloChooseGrpc">Elige el grpc deseado</h2>
+
+                </div>
+                <h2 style="display:none" id="TituloConfigAtrb" > Configura los atributos a tu gusto (Request)</h2>
+
+                <div id="AllAtributes" class="ajustesAllatributes">
+                </div>
+               
+
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            
+                    <button id="add_new_message" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+            </form>
+
+
+        </div>
+    </div>
+
+
+        <script>
+
+            var servicios_ejs = JSON.parse('<%- JSON.stringify(servicios) %>');
+            var messages_ejs = JSON.parse('<%- JSON.stringify(messages) %>');
+            var ServiceChoose = document.getElementById('ServiceChoose');
+            var nuevodiv = document.createElement('div');
+            nuevodiv.setAttribute('id', 'GrpcChoose');
+            nuevodiv.setAttribute('class', 'd-grid gap-2 ajustesSelectgrpc');
+            var AllSelect = document.getElementById('AllSelect');
+            var AllAtributes = document.getElementById('AllAtributes');
+
+            var divrowmb3 = document.createElement('div');
+            divrowmb3.setAttribute('id', 'divrowmb3');
+            divrowmb3.setAttribute('class', 'row mb-3');
+            AllAtributes.appendChild(divrowmb3);
+
+            var TituloChooseGrpc = document.getElementById('TituloChooseGrpc');
+
+
+            function mostrarGrpcs(){
+                TituloChooseGrpc.style.display='block';
+
+                
+                // La primera vez que ejecutemos el div no contendrá selects 
+                while (nuevodiv.firstChild) {
+                    nuevodiv.removeChild(nuevodiv.firstChild);
+                }
+
+                //Eliminamos tipos de mensajes siestñan selecionados
+                while (divrowmb3.firstChild) {
+                    divrowmb3.removeChild(divrowmb3.firstChild);
+                }
+
+                TituloConfigAtrb.style.display='none';
+
+                /*
+                if(nuevodiv.childNodes.length>0){
+                //    console.log(nuevodiv.childElementCount);
+                //    console.log(nuevodiv);
+                    nuevodiv.firstChild.remove();
+                }*/
+                servicios_ejs.forEach(servicio => {
+                   
+                    if(servicio.name==ServiceChoose.value){
+
+                        var newselect = document.createElement('select');
+                        newselect.setAttribute('class','form-select');
+                        newselect.setAttribute('aria-label','Default select example');
+                        newselect.setAttribute('name','grpcChoose');
+                        newselect.setAttribute('id','grpcChooseSelect');
+                        newselect.setAttribute('onchange','mostrarMessages()');
+
+                        var newOptionDefault = document.createElement('option');
+                        newOptionDefault.setAttribute('selected', 'selected');
+                        newOptionDefault.setAttribute('value', 'noyet');
+                        newOptionDefault.innerHTML='choose a grpc';
+
+                        servicio.grpcs.forEach(grpc =>{
+                            var newOption = document.createElement('option');
+                          //  newOption.setAttribute('selected', 'selected');
+                            newOption.setAttribute('value', grpc.name);
+                            newOption.innerHTML=grpc.name;
+                            newselect.appendChild(newOption);
+                        })
+                        newselect.appendChild(newOptionDefault); 
+                        nuevodiv.appendChild(newselect);
+                        AllSelect.appendChild(nuevodiv);
+                    }
+                });            
+            }
+
+            
+
+            function mostrarMessages(){
+
+                var TituloConfigAtrb = document.getElementById('TituloConfigAtrb');
+                TituloConfigAtrb.style.display='block';
+                
+                console.log('crear mensajes y eliminar y tal');
+                console.log(nuevodiv.firstChild.value);
+                console.log(ServiceChoose.value);
+
+                while (divrowmb3.firstChild) {
+                    divrowmb3.removeChild(divrowmb3.firstChild);
+                }
+                var request ;
+                servicios_ejs.forEach(servicio =>{
+                    if(servicio.name==ServiceChoose.value){
+                        console.log('servicio.name');
+                        console.log(servicio.name);
+                        servicio.grpcs.forEach(grpc =>{
+                            if(grpc.name==nuevodiv.firstChild.value){
+                                console.log('grpc.name');
+                                console.log(grpc.name);
+                                request=grpc.request;
+                                console.log(request);
+                            }
+                        })
+                    }
+                })
+                
+                messages_ejs.forEach(message =>{
+                    if(message.name==request){
+                        message.types.forEach(msgtype =>{
+                            console.log(msgtype);
+                            var divcolsm8 = document.createElement('div');
+                            divcolsm8.setAttribute('class','col-sm-8');
+                                            
+                            var newinputdisabled = document.createElement('input');
+                            newinputdisabled.setAttribute('type','text');
+                            newinputdisabled.setAttribute('id','disabledTextInput');
+                            newinputdisabled.setAttribute('class','form-control');
+                            
+                            newinputdisabled.value=msgtype.typename;
+                            newinputdisabled.setAttribute('name','typeAtrb[]');
+
+                            newinputdisabled.setAttribute('readonly', '');
+
+
+                            divcolsm8.appendChild(newinputdisabled);
+
+
+                            var divcol = document.createElement('div');
+                            divcol.setAttribute('class','col');
+                            var newinput = document.createElement('input');
+                            newinput.setAttribute('class','form-control');
+                            //ver si es int o tal 
+                            newinput.setAttribute('name','nameAtrb[]');
+                            var placeholder = 'Type: ' + msgtype.tipo;
+                            newinput.setAttribute('placeholder',placeholder);
+                            if(msgtype.tipo=='int32'){
+                                newinput.setAttribute('type','number');
+                            }else{
+                                newinput.setAttribute('type','text');
+                            }
+
+                            divcol.appendChild(newinput);
+
+                            divrowmb3.appendChild(divcolsm8);
+                            divrowmb3.appendChild(divcol);
+
+                            
+                        })
+                    }
+                })
+
+
+            }
+
+
+        </script>
+
+
+
+
+
+
+
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+ 
+  </body>
+</html>
+
+
+    <!-- Optional JavaScript; choose one of the two! -->

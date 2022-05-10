@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <title>Mostrar servicios</title>
+    <style>
+        .container{
+            max-width: 1200px;
+        }
+    </style>
+</head>
+  <body>
+
+    <div class="container">
+        <div class="shadow-lg pb-3 mb-5 bg-body rounded ">
+            <h4>Insertar servicio</h4>
+            <h2>Crea tu nuevo servicio!</h2>  
+
+            <form action="/crear_service" method="POST">
+                <div class="row mb-3">
+                  <label for="name" class="col-sm-2 col-form-label">Nombre Servicio</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" name="name" id="name" required>
+                  </div>
+                </div>
+              
+                <div class="d-flex flex-row bd-highlight mb-3">
+                  <div class="p-2 bd-highlight">GRPc's</div>
+                  <button id="add_grpc" type="button" class="btn btn-success">+</button>
+                  <!--script oculto para obtener el nombre de todos los mensajes-->
+                  <% messages.forEach( (message) => { %>
+                            
+                    <option style="display:none" name="msg[]" value='<%= message.name %>'><%=message.name %></option>
+        
+                  <%  })%>
+                  <script> 
+                  // se obtienen los messages para el option cuando añadimos un nuevo grpc
+                  const msgs = document.getElementsByName('msg[]');
+         
+                  const add_grpc = document.getElementById("add_grpc");
+                  var x =1;
+                  add_grpc.addEventListener("click", function(e){
+                    x++;
+                    generar_inputs_html(x);
+                
+                  });  
+                
+                  function generar_inputs_html(x){
+                  
+                    var newdiv = document.createElement('div');
+                    newdiv.setAttribute('class','row mb-3');
+                    var newlabel = document.createElement('label');
+                    newlabel.setAttribute('class','col-sm-2 col-form-label');
+                    newlabel.setAttribute('for','nameReply');
+                    newlabel.innerHTML= "Name of GRPc " + x;
+                    var newdiv2 = document.createElement('div');
+                    newdiv2.setAttribute('class','col-sm-10');
+                    var newInput = document.createElement('input');
+                    newInput.setAttribute('type', 'text');
+                    newInput.setAttribute('class', 'form-control');
+                    newInput.setAttribute('id', 'nameReplyX');
+                    newInput.setAttribute('name', 'array[]');
+                  
+                  
+                    newdiv2.appendChild(newInput);
+                    newdiv.appendChild(newlabel);
+                    newdiv.appendChild(newdiv2);
+                  
+                  
+                    var newdivRT = document.createElement('div');
+                    newdivRT.setAttribute('class','row mb-3');
+                    var newlabelRT = document.createElement('label');
+                    newlabelRT.setAttribute('class','col-sm-2 col-form-label');
+                    newlabelRT.setAttribute('for','nameReply');
+                    newlabelRT.innerHTML= "Request type GRPc " + x;
+                    var newdivRT2 = document.createElement('div');
+                    newdivRT2.setAttribute('class','col-sm-10');
+                    var newInputRT = document.createElement('select');
+                    newInputRT.setAttribute('type', 'text');
+                    newInputRT.setAttribute('class', 'form-select');
+                    newInputRT.setAttribute('id', 'nameReplyX');
+                    newInputRT.setAttribute('name', 'array[]');
+                    
+                    
+                    msgs.forEach((msg) =>{
+                      //create new element y pornerle los mismos atributos 
+                      newOption1 = document.createElement('option');
+                      newOption1.innerHTML = msg.innerHTML;
+                      newOption1.setAttribute('value', msg.getAttribute('value'));
+                      newInputRT.appendChild(newOption1);
+                    })
+
+                
+                    newdivRT2.appendChild(newInputRT);
+                    newdivRT.appendChild(newlabelRT);
+                    newdivRT.appendChild(newdivRT2);
+                  
+                  
+                    var newdivRS = document.createElement('div');
+                    newdivRS.setAttribute('class','row mb-3');
+                    var newlabelRS = document.createElement('label');
+                    newlabelRS.setAttribute('class','col-sm-2 col-form-label');
+                    newlabelRS.setAttribute('for','nameReply');
+                    newlabelRS.innerHTML= "Reply type GRPc " + x;
+                    var newdivRS2 = document.createElement('div');
+                    newdivRS2.setAttribute('class','col-sm-10');
+                    var newInputRS = document.createElement('select');
+                    newInputRS.setAttribute('type', 'text');
+                    newInputRS.setAttribute('class', 'form-select');
+                    newInputRS.setAttribute('id', 'nameReplyX');
+                    newInputRS.setAttribute('name', 'array[]');
+                    
+                    msgs.forEach((msg) =>{
+                      //create new element y pornerle los mismos atributos 
+                      newOption1 = document.createElement('option');
+                      newOption1.innerHTML = msg.innerHTML;
+                      newOption1.setAttribute('value', msg.getAttribute('value'));
+                      newInputRS.appendChild(newOption1);
+                    })
+
+                    newdivRS2.appendChild(newInputRS);
+                    newdivRS.appendChild(newlabelRS);
+                    newdivRS.appendChild(newdivRS2);
+                  
+                    grpc_class_html.appendChild(newdiv);
+                    grpc_class_html.appendChild(newdivRT);
+                    grpc_class_html.appendChild(newdivRS);
+                  
+                  };
+                 
+                  
+                  
+                </script>
+
+                </div>
+        
+                <div id="grpc_class_html">
+                  <div class="row mb-3">
+                    <label for="nameGrpc" 
+                    class="col-sm-2 col-form-label">Nombre GRPc 1</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="array[]" id="nameGrpc" required>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="nameRequest" 
+                    class="col-sm-2 col-form-label">Request type GRPc 1</label>
+                    <!--    
+                    <div class="col-sm-10">
+                      <input type="text" name="array[]" class="form-control" id="nameRequest" required>
+                    </div>
+                    -->
+
+                    <div class="col">  
+                      <select name="array[]" class="form-select" aria-label="Default select example" required>
+                       <% messages.forEach( (message) => { %>
+                          
+                          <option id='option' value='<%= message.name %>'><%=message.name %></option>
+              
+                          <%  })%>
+                  
+                      </select>
+
+                    </div>
+
+
+                  </div>
+                  <div class="row mb-3">
+                    <label for="nameReply"
+                    class="col-sm-2 col-form-label">Reply type GRPc 1</label>
+                    <div class="col-sm-10">
+                      <div class="col">  
+                        <select name="array[]" class="form-select" aria-label="Default select example" required>
+                         <% messages.forEach( (message) => { %>
+                            
+                            <option value='<%= message.name %>'><%=message.name %></option>
+                
+                            <%  })%>
+                    
+                        </select>                    
+                      </div>
+                  </div>
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <button id="button_new_service" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+           
+            <form action="/crear_message" method="POST">
+                <h2>Crea tu nuevo tipo de menssage!</h2>  
+                
+                <div class="row mb-3">
+                  <label for="nameType" 
+                  class="col-sm-2 col-form-label">Name of message</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" name="nameType" id="nameType" required>
+                  </div>
+                </div>
+        
+                <div class="d-flex flex-row bd-highlight mb-3">
+                    <div class="p-2 bd-highlight">Insert your attibute(s)</div>
+                    <button id="add_attribute" type="button" class="btn btn-success">+</button>
+                </div>
+
+                <script>
+                  const add_atrb = document.getElementById('add_attribute');
+             //     const add_atributo = document.getElementById('add_atributo');
+                  var x = 1;
+                  add_atrb.addEventListener('click', function(e){
+                    console.log('add atributo');
+                    x++;
+                    generar_input_atrb(x);
+                  })
+                  function generar_input_atrb(x){
+
+                    var newdiv = document.createElement('div');
+                    newdiv.setAttribute('class','row mb-3');
+
+
+                    var newdiv2 = document.createElement('div');
+                    newdiv2.setAttribute('class','col');
+                    var newselect = document.createElement('select');
+                    newselect.setAttribute('class','form-select');
+                    newselect.setAttribute('aria-label','Default select example');
+                    newselect.setAttribute('name','array[]');
+                    var newoption1 = document.createElement('option');
+                    newoption1.setAttribute('value','string');
+                    newoption1.innerHTML='string';
+                    var newoption2 = document.createElement('option');
+                    newoption2.setAttribute('value','int32');
+                    newoption2.innerHTML='int32';  
+                    var newoption3 = document.createElement('option');
+                    newoption3.setAttribute('value','bool');
+                    newoption3.innerHTML='bool'; 
+                      var newoption4 = document.createElement('option');
+                    newoption4.setAttribute('value','message');
+                    newoption4.innerHTML='message';
+                    
+                    newselect.appendChild(newoption2);
+                    newselect.appendChild(newoption3);
+                    newselect.appendChild(newoption4);
+                    newselect.appendChild(newoption1);
+                    newdiv2.appendChild(newselect);
+                    newdiv.appendChild(newdiv2);
+
+
+
+                    var newdivcol = document.createElement('div');
+                    newdivcol.setAttribute('class','col-sm-8');
+                    var newinput = document.createElement('input');
+                    newinput.setAttribute('type','text');
+                    newinput.setAttribute('name','array[]');
+                    newinput.setAttribute('class','form-control');
+                    newinput.setAttribute('placeholder','input name of attribute type');
+                    newinput.setAttribute('required','');
+
+                    newdivcol.appendChild(newinput);
+                    newdiv.appendChild(newdivcol);
+
+                    add_atributo.appendChild(newdiv);
+
+                  }
+
+              
+                  
+
+                </script>
+                  <div id="add_atributo">
+                    <div class="row mb-3">
+                      <div class="col">  
+                        <select name="array[]" class="form-select" aria-label="Default select example" required>
+                            <option value="string">string</option>
+                            <option value="int32">int32</option>
+                            <option value="bool">bool</option>
+                            <option value="message">message</option>
+        
+                        </select>    
+                      </div>
+                      <div class="col-sm-8">
+                          <input type="text"  name="array[]" class="form-control" id="nameAtributte" placeholder="input name of attribute type" required>
+                      </div>
+                  </div>
+                  </div>
+                   
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        
+                  <button id="add_new_message" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+              <table id="tablaMessages" class="table mt-4">
+                <thead>
+                    <tr>
+                        <th style="display:none">id</th>
+                        <th>Nombre</th>
+                        <th>atributos
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                        </th>
+            
+                    </tr>
+                </thead>
+                <tbody>
+                    <% messages.forEach( (message) => { %>
+                        <tr>
+                            <td style="display:none"><%= message._id %></td>
+                            <td><%= message.name %></td>
+                            <td><%message.types.forEach((types) => { %>
+                                <td><%= types.typename %></td>
+                                <td><%= types.tipo %></td>
+                            <%  })%>
+                            </td>
+                            <td>
+                              <!--
+                                boton editar
+                                <a type="button" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
+
+                              -->
+                              <a href="/delete_message/<%= message._id %>" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        </tr>
+            
+                        <%  })%>
+                </tbody>
+            </table>
+             
+              
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+
+  </body>
+</html>
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
