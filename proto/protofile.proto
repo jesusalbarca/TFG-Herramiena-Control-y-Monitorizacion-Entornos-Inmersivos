@@ -13,11 +13,11 @@ service Greeter {
 service GestionarNodos { 
   rpc MostrarNodos (request_node) returns (reply_node)  {}
 } 
-service a { 
-  rpc a (Request) returns (Request)  {}
-} 
-message HelloRequest {
-string name = 1; 
+message Request {
+string CommandType = 1; 
+string OpCode = 2; 
+string Dataa = 3; 
+string Options = 4; 
 } 
 message Request_message {
 string MessageType = 1; 
@@ -25,24 +25,21 @@ string OpCode = 2;
 string Dataa = 3; 
 string Options = 4; 
 } 
+message Reply {
+string message = 1; 
+} 
+message HelloRequest {
+string name = 1; 
+} 
 message HelloReply {
 string message = 1; 
 } 
 message request_node {
 int32 numer_nodos = 1; 
 } 
-message Reply {
-string message = 1; 
-} 
-message Request {
-string CommandType = 1; 
-string OpCode = 2; 
-string Dataa = 3; 
-string Options = 4; 
+message reply_node {
+bool isOkey = 1; 
 } 
 message Response_message {
 string message = 1; 
-} 
-message reply_node {
-bool isOkey = 1; 
 } 

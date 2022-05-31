@@ -345,36 +345,41 @@
                 <thead>
                     <tr>
                         <th style="display:none">id</th>
-                        <th>Nombre</th>
-                        <th>atributos
-                            <th>Nombre</th>
-                            <th>Tipo</th>
+                        <th>Nombre Mensaje</th>
+                        <th>Atributos Asociados
+                         
                         </th>
             
                     </tr>
                 </thead>
-                <tbody>
-                    <% messages.forEach( (message) => { %>
-                        <tr>
-                            <td style="display:none"><%= message._id %></td>
-                            <td><%= message.name %></td>
-                            <td><%message.types.forEach((types) => { %>
-                                <td><%= types.typename %></td>
-                                <td><%= types.tipo %></td>
-                            <%  })%>
-                            </td>
-                            <td>
-                              <!--
-                                boton editar
-                                <a type="button" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
-
-                              -->
-                              <a href="/delete_message/<%= message._id %>" class="btn btn-outline-danger bi bi-trash"></a>
-                            </td>
-                        </tr>
+                <% messages.forEach( (message) => { %>
+                  <tr style="background-color: #10434e;">
+                        <td style="display:none"><%= message._id %></td>
+                        <td style="color:#1d61d8;font-size: 22px;"><%= message.name %></td>
+                        <td>  
+                          <% var i = 1; %>
             
-                        <%  })%>
-                </tbody>
+                          <ul> 
+                            <%message.types.forEach((types) => { %>
+            
+                              <li><a style="color:#fffbf3">Nombre Atrb<%=i%>:</a> <a style="color:#1bf3d7"> <%= types.typename %></a> <a  style="color:#f3fed4">(<%= types.tipo %>)</a></li>        
+                            <% i++; %>
+                            <%  })%>
+            
+                          </ul>
+                         
+                        </td>
+                        <td>
+                          <!--
+                            boton editar
+                            <a type="button" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
+            
+                          -->
+                          <a href="/delete_message/<%= message._id %>/<%= message.name %>" class="btn btn-outline-danger bi bi-trash"></a>
+                        </td>
+                    </tr>
+            
+                    <%  })%>
             </table>
              
               

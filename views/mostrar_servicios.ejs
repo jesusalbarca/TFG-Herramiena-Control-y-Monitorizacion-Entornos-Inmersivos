@@ -67,16 +67,16 @@
               </thead>
               <tbody>
                   <% servicios.forEach( (servicio) => { %>
-                      <tr>
+                      <tr style="background-color: #10434e;">
                           <td style="display:none"><%= servicio._id %></td>
-                          <td><%= servicio.name %></td>
+                          <td style="color:#1d61d8;font-size: 30px;"><%= servicio.name %></td>
                           <td>
                             <% var i = 1; %>
                             <ul><%servicio.grpcs.forEach((grpc) => { %>
-                                <li style="color:#efbf21">Grpc<%=i%>: <%= grpc.name %></li>
+                                <li><a style="color:#fffbf3">Grpc<%=i%>:</a>  <a style="color:#05a8ed"> <%= grpc.name %></a></li>
                                 <ul>
-                                  <li>Mensaje Request: <%= grpc.request %></li>
-                                  <li>Mensaje Reply: <%= grpc.reply %></li>
+                                  <li> <a style="color:#fffbf3">Mensaje Request:</a> <a style="color:#1bf3d7"> <%= grpc.request %></a> </li>
+                                  <li> <a style="color:#fffbf3">Mensaje Reply:</a> <a style="color:#f3fed4"> <%= grpc.reply %></a> </li>
                                 </ul>
                                 <% i++; %>
                             <%  })%>

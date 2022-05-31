@@ -45,17 +45,7 @@ app.get('/ejecutar', function (req, res) {
   })
 })
 
-/*
-app.get('/', function (req, res){
-  var services_mongo = fetch('http://localhost:3000/get/allServices');
 
-  services_mongo.then((datos)=>datos.json())
-  .then((datos)=>{
-    //generar sintaxis servicios en arhivo proto
-    console.log(services_mongo);
-  })
-})
-*/
 var servicio_creado = "";
 var existe_service = false;
 app.get('/insertar_service', function (req, res) {
@@ -127,28 +117,6 @@ app.post('/crear_service', function (req, res) {
       return res.redirect('/insertar_service');
     }
   });
-
-  //console.log(existe_service(req.body.name));
-
-  /*
-  const servicio = new ModelService ({
-    name: req.body.name, 
-    grpcs: grpcs
-  })
-/*
-  servicio.save(function(err, servicio){
-      if(err){
-          return res.status(500).json({
-              message: 'Erro al crear Alumno'
-          })
-      }else{
-        servicio_creado = req.body.name;
-      }
-  })
-  */
-  //error operation not permitted, open PATH syscall: 'open'
-  // p1();
-  // res.redirect('/insertar_service');
 
 })
 
@@ -318,10 +286,10 @@ const { dir } = require('console');
 
 async function generateSintax() {
   //generar sintaxis servicios en arhivo proto
-  console.log(0);
+ // console.log(0);
   await delete_protofile();
   await sintaxService();
-  console.log(2);
+ // console.log(2);
   //generar sintaxis messages en arhivo proto
   await sintaxMessage();
   console.log('eeey');
@@ -335,8 +303,8 @@ async function generateSintax() {
     }
   });
  // fs.close(__dirname + '/proto/protofile.proto');
-  console.log(4);
-  await sleep(5000);
+//  console.log(4);
+ // await sleep(5000);
   grpcs();
   console.log(5);
   console.dir(grpcServices);
@@ -370,7 +338,7 @@ async function sintaxService() {
           });
 
         });
-        console.log(1);
+     //   console.log(1);
         resolve();
       })
   })
@@ -399,9 +367,8 @@ async function sintaxMessage() {
           console.log('Message ' + message.name + ' añadido en proto/protofile.proto de mongodb');
         });
       })
-      fs.dir.close();
     })
-    console.log(3);
+  //  console.log(3);
 }
 
 
@@ -445,9 +412,9 @@ var PROTO_PATH = __dirname + '/proto/helloworld.proto';
         grpcServices['service' + service.name] = new hello_proto[`${service.name}`]('localhost:50051', grpc.credentials.createInsecure());
 
       });
-      console.log(4.4);
+    //  console.log(4.4);
     })
-    console.log(4.5);
+ //   console.log(4.5);
 
 }
 
