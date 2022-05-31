@@ -15,20 +15,52 @@
     </style>
 </head>
   <body>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <form action="/" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Home</button>
+  
+            </form>
+          
+          <form action="/ejecutar" method="GET">
+            <button class="nav-link " id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Ejecutar Servicios</button>
+  
+          </form>
+  
+          <form action="/insertar_service" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Crear Servicio</button>
+  
+          </form>
+          <form action="/mostrar_servicios" method="GET">
+            <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Servicios</button>
+  
+          </form>
+          <form action="/mostrar_messages" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Mensajes</button>
+  
+          </form>
+        </div>
+      </nav>
+
+      
+    <% if(alert_service_delete){ %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Servicio Eliminado!</strong> Eliminado correctamente el servicio: <%= alert_service_delete %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
 
     <div class="container">
+
+        <h1>Tus servicios!</h1>
         <div class="shadow-lg pb-3 mb-5 bg-body rounded ">
-            <h4>Hola</h4>
             <table id="tablaServices" class="table mt-4">
               <thead>
                   <tr>
                       <th style="display:none">id</th>
-                      <th>Nombre</th>
-                      <th>grpc's
-                          <th>Nombre</th>
-                          <th>Request</th>
-                          <th>Reply</th>
-
+                      <th>Nombre Servicio</th>
+                      <th>Grpc's Asociados
+                         
                       </th>
 
                   </tr>
@@ -38,14 +70,20 @@
                       <tr>
                           <td style="display:none"><%= servicio._id %></td>
                           <td><%= servicio.name %></td>
-                          <td><%servicio.grpcs.forEach((grpc) => { %>
-                              <td><%= grpc.name %></td>
-                              <td><%= grpc.request %></td>
-                              <td><%= grpc.reply %></td>
-                          <%  })%>
-                          </td>
                           <td>
-                            <a href="/delete_service/<%= servicio._id %>" class="btn btn-outline-danger bi bi-trash"></a>
+                            <% var i = 1; %>
+                            <ul><%servicio.grpcs.forEach((grpc) => { %>
+                                <li style="color:#efbf21">Grpc<%=i%>: <%= grpc.name %></li>
+                                <ul>
+                                  <li>Mensaje Request: <%= grpc.request %></li>
+                                  <li>Mensaje Reply: <%= grpc.reply %></li>
+                                </ul>
+                                <% i++; %>
+                            <%  })%>
+                            </ul>
+                          </td> 
+                          <td>
+                            <a href="/delete_service/<%= servicio._id %>/<%= servicio.name %>" class="btn btn-outline-danger bi bi-trash"></a>
                           </td>
 
                       </tr>

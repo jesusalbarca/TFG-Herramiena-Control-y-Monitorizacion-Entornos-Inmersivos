@@ -15,8 +15,41 @@
     </style>
 </head>
   <body>
-
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <form action="/" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Home</button>
+  
+            </form>
+          
+          <form action="/ejecutar" method="GET">
+            <button class="nav-link " id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Ejecutar Servicios</button>
+  
+          </form>
+  
+          <form action="/insertar_service" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Crear Servicio</button>
+  
+          </form>
+          <form action="/mostrar_servicios" method="GET">
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Servicios</button>
+  
+          </form>
+          <form action="/mostrar_messages" method="GET">
+            <button class="nav-link active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="submit" role="tab" aria-controls="nav-profile" aria-selected="false">Mensajes</button>
+  
+          </form>
+        </div>
+      </nav>
+      
+      <% if(alert_message_delete){ %>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Mensaje Eliminado!</strong> Eliminado correctamente el mensaje: <%= alert_message_delete %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
     <div class="container">
+        <h1>Tus mensajes!</h1>
         <div class="shadow-lg pb-3 mb-5 bg-body rounded ">
             
 
@@ -25,28 +58,43 @@
     <thead>
         <tr>
             <th style="display:none">id</th>
-            <th>Nombre</th>
-            <th>atributos
-                <th>Nombre</th>
-                <th>Tipo</th>
+            <th>Nombre Mensaje</th>
+            <th>Atributos Asociados
+             
             </th>
 
         </tr>
     </thead>
-    <tbody>
-        <% messages.forEach( (message) => { %>
-            <tr>
-                <td style="display:none"><%= message._id %></td>
-                <td><%= message.name %></td>
-                <td><%message.types.forEach((types) => { %>
-                    <td><%= types.typename %></td>
-                    <td><%= types.tipo %></td>
-                <%  })%>
-                </td>
-            </tr>
+    <% messages.forEach( (message) => { %>
+        <tr>
+            <td style="display:none"><%= message._id %></td>
+            <td><%= message.name %></td>
+            <td>  
+              <% var i = 1; %>
 
-            <%  })%>
-    </tbody>
+              <ul> 
+                <%message.types.forEach((types) => { %>
+
+                  <li>Nombre Atrb<%=i%>: <%= types.typename %> (<%= types.tipo %>)</li>
+                  
+                <% i++; %>
+
+                <%  })%>
+
+              </ul>
+             
+            </td>
+            <td>
+              <!--
+                boton editar
+                <a type="button" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
+
+              -->
+              <a href="/delete_message/<%= message._id %>/<%= message.name %>" class="btn btn-outline-danger bi bi-trash"></a>
+            </td>
+        </tr>
+
+        <%  })%>
 </table>
         </div>
     </div>
