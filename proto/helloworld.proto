@@ -1,32 +1,26 @@
 syntax = "proto3"; 
 package helloworld;
-service a { 
-  rpc a (Request) returns (Request)  {}
-} 
-service GestionarNodos { 
-  rpc MostrarNodos (request_node) returns (reply_node)  {}
+service Command { 
+  rpc LightsOn (Request) returns (Reply)  {}
+  rpc LightsOff (Request) returns (Reply)  {}
+  rpc MoveHome (Request) returns (Reply)  {}
 } 
 service Greeter { 
   rpc SayHello (HelloRequest) returns (HelloReply)  {}
   rpc SayHelloAgain (HelloRequest) returns (HelloReply)  {}
   rpc AddMessage (Request_message) returns (Response_message)  {}
 } 
-service Command { 
-  rpc LightsOn (Request) returns (Reply)  {}
-  rpc LightsOff (Request) returns (Reply)  {}
-  rpc MoveHome (Request) returns (Reply)  {}
+service aaaa { 
+  rpc aaa (reply_node) returns (Request_message)  {}
 } 
-message Request {
-string CommandType = 1; 
-string OpCode = 2; 
-string Dataa = 3; 
-string Options = 4; 
-} 
-message Reply {
-string message = 1; 
+service GestionarNodos { 
+  rpc MostrarNodos (request_node) returns (reply_node)  {}
 } 
 message HelloRequest {
 string name = 1; 
+} 
+message request_node {
+int32 numer_nodos = 1; 
 } 
 message HelloReply {
 string message = 1; 
@@ -37,12 +31,18 @@ string OpCode = 2;
 string Dataa = 3; 
 string Options = 4; 
 } 
-message Response_message {
-string message = 1; 
-} 
-message request_node {
-int32 numer_nodos = 1; 
+message Reply {
+string MessageType  = 1; 
+int32 OpCode  = 2; 
+int32 Dataa  = 3; 
+int32 Options  = 4; 
 } 
 message reply_node {
 bool isOkey = 1; 
+} 
+message Request {
+string opration = 1; 
+} 
+message Response_message {
+string message = 1; 
 } 

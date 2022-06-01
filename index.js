@@ -138,6 +138,7 @@ app.post('/crear_message', function (req, res) {
     const type = { "tipo": req.body.array[i], "typename": req.body.array[i + 1] };
     types.push(type);
   }
+  
   const message = new ModelMessage({
     name: req.body.nameType,
     types: types
