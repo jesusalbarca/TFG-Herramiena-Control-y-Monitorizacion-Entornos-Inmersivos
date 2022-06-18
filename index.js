@@ -311,11 +311,7 @@ async function generateSintax() {
   console.dir(grpcServices);
 }
 generateSintax();
-/*
-generateSintax().then(()=>
-  grpcs()
-)
-*/
+
 async function sintaxService() {
   return new Promise((resolve)=>{
     var services_mongo = fetch('http://localhost:3000/get/allServices');
