@@ -1,2 +1,2 @@
-# TFG-Herramiena-Control-y-Monitorizacion-Entornos-Inmersivos
-
+# TFG-Herramienta-Control-y-Monitorizacion-Entornos-Inmersivos
+@alreylz y Jesús Albarca Gordillo
