@@ -1,5 +1,4 @@
 const alert = require('alert');
-
 const express = require('express');
 const db = require('./db');
 const app = express();
@@ -9,12 +8,7 @@ const fs = require('fs');
 
 app.set('view engine', 'ejs');
 
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -25,6 +19,14 @@ server.listen(3000, () => {
 });
 
 
+//RUTAS DE LA APLICACIÓN
+
+//PÁGINA INICIO
+app.get('/', function (req, res) {
+  res.render('inicio.ejs');
+})
+
+//PÁGINA EJECUTAR SERVICIO
 app.get('/ejecutar', function (req, res) {
   ModelService.find({}, (err, servicios) => {
     if (err) {
@@ -41,13 +43,14 @@ app.get('/ejecutar', function (req, res) {
       res.render('index.ejs', { servicios: servicios, messages: messages })
 
     })
-    //  return res.render('index.ejs', {servicios: servicios})
   })
 })
 
 
 var servicio_creado = "";
 var existe_service = false;
+
+//PÁGINA CREAR SERVICIO
 app.get('/insertar_service', function (req, res) {
 
   ModelMessage.find({}, (err, messages) => {
@@ -69,15 +72,49 @@ app.get('/insertar_service', function (req, res) {
     } else {
       res.render('insertar_service.ejs', { messages: messages, alert_service_create: '', alert_service_existe: '' });
       servicio_creado = "";
-
     }
-
-
   })
 });
 
-//router.post('/crear_service', serviceControler.crear);
 
+//PÁGINA MOSTRAR MENSAJES
+app.get('/mostrar_messages', function (req, res) {
+  ModelMessage.find({}, (err, messages) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error mostrando los servicios'
+      })
+    }
+    if (message_delete) {
+      res.render('mostrar_messages', { messages: messages, alert_message_delete: message_delete })
+      message_delete = '';
+
+    } else {
+      return res.render('mostrar_messages', { messages: messages, alert_message_delete: '' })
+    }
+  })
+});
+
+//PÁGINA MOSTRAR SERVICIOS
+app.get('/mostrar_servicios', function (req, res) {
+  ModelService.find({}, (err, servicios) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error mostrando los servicios'
+      })
+    }
+    if (servicio_delete) {
+      res.render('mostrar_servicios', { servicios: servicios, alert_service_delete: servicio_delete });
+      servicio_delete = '';
+
+    } else {
+      return res.render('mostrar_servicios', { servicios: servicios, alert_service_delete: '' })
+
+    }
+  })
+});
+
+// MÉTODO INSERTAR SERVICIO
 app.post('/crear_service', function (req, res) {
   console.log('insertar en bbdd pero ERROR --> actualizar fichero proto');
   console.log(req.body);
@@ -120,17 +157,7 @@ app.post('/crear_service', function (req, res) {
 
 })
 
-app.get('/', function (req, res) {
-
-  res.render('inicio.ejs');
-  // res.redirect('/index');
-
-})
-
-app.get('/prueba', function (req, res) {
-  res.redirect('/insertar_service');
-})
-
+//MÉTODO INSERTAR MENSAJE
 app.post('/crear_message', function (req, res) {
   var types = [];
 
@@ -154,48 +181,11 @@ app.post('/crear_message', function (req, res) {
   })
 });
 
-app.get('/mostrar_messages', function (req, res) {
-  ModelMessage.find({}, (err, messages) => {
-    if (err) {
-      return res.status(500).json({
-        message: 'Error mostrando los servicios'
-      })
-    }
-    if (message_delete) {
-      res.render('mostrar_messages', { messages: messages, alert_message_delete: message_delete })
-      message_delete = '';
-
-    } else {
-      return res.render('mostrar_messages', { messages: messages, alert_message_delete: '' })
-    }
-  })
-});
-
-
-app.get('/mostrar_servicios', function (req, res) {
-  ModelService.find({}, (err, servicios) => {
-    if (err) {
-      return res.status(500).json({
-        message: 'Error mostrando los servicios'
-      })
-    }
-    if (servicio_delete) {
-      res.render('mostrar_servicios', { servicios: servicios, alert_service_delete: servicio_delete });
-      servicio_delete = '';
-
-    } else {
-      return res.render('mostrar_servicios', { servicios: servicios, alert_service_delete: '' })
-
-    }
-  })
-});
-
 
 const ModelService = require('./model/Servicio');
 
-
+//OBTENER SERVICIOS JSON
 app.get('/get/allServices', function (req, res) {
-  // res.send('hola');
   ModelService.find({}, (err, servicios) => {
     if (err) {
       return res.status(500).json({
@@ -203,13 +193,12 @@ app.get('/get/allServices', function (req, res) {
       })
     }
     res.send(servicios);
-    //   console.log(servicios);
   })
 });
 
 const ModelMessage = require('./model/Message');
 
-
+//OBTENER MENSAJES JSON
 app.get('/get/allMessages', function (req, res) {
   // res.send('hola');
   ModelMessage.find({}, (err, messages) => {
@@ -222,8 +211,10 @@ app.get('/get/allMessages', function (req, res) {
     //   console.log(servicios);
   })
 });
+
 var message_delete = "";
 
+//ELIMINAR MENSAJE
 app.get('/delete_message/:id/:name', function (req, res) {
   const id = req.params.id;
   ModelMessage.findByIdAndRemove(id, (err, message) => {
@@ -239,6 +230,8 @@ app.get('/delete_message/:id/:name', function (req, res) {
 });
 
 var servicio_delete = "";
+
+//ELIMINAR SERVICIO
 app.get('/delete_service/:id/:name', function (req, res) {
   const id = req.params.id;
   ModelService.findByIdAndRemove(id, (err, service) => {
@@ -252,32 +245,39 @@ app.get('/delete_service/:id/:name', function (req, res) {
   })
 
 });
-const path = require('path');
 
+
+const path = require('path');
 
 //Elmina el archivo proto y lo vuelve a crear con la cabecera
 const rutaProto = path.resolve(__dirname, 'proto', 'protofile.proto');
 
 async function delete_protofile() {
+
+  return new Promise((resolve)=>{
+
   //Archivo proto
   //crear directorio proto si no existe
 
-  var Q_SAVEPATH = "proto";
-  fs.promises.mkdir(`${__dirname}/${Q_SAVEPATH}`, { recursive: true })
-    .then(() => console.log("[DIR INIT] Success on initialising the persistency directories for gRPC (/proto) : " + `${__dirname}/${Q_SAVEPATH}`))
-    .catch(() => console.error("[ERROR] Something went wrong initialising directory : " + `${__dirname}/${Q_SAVEPATH}`));
+    var Q_SAVEPATH = "proto";
+    fs.promises.mkdir(`${__dirname}/${Q_SAVEPATH}`, { recursive: true })
+      .then(() => console.log("[DIR INIT] Success on initialising the persistency directories for gRPC (/proto) : " + `${__dirname}/${Q_SAVEPATH}`))
+      .catch(() => console.error("[ERROR] Something went wrong initialising directory : " + `${__dirname}/${Q_SAVEPATH}`));
 
-  try {
-    fs.promises.unlink(rutaProto);
-    console.log('successfully deleted /proto/protofile.proto');
-  } catch (error) {
-    console.error('there was an error:', error.message);
-  }
-  var headproto = 'syntax = "proto3"; \npackage helloworld;\n';
-  fs.appendFile(rutaProto, headproto, (err) => {
-    if (err) throw err;
-    console.log('Cabezera insertada en proto/protofile.proto');
-  });
+    try {
+      fs.promises.unlink(rutaProto);
+      console.log('successfully deleted /proto/protofile.proto');
+    } catch (error) {
+      console.error('there was an error:', error.message);
+    }
+    var headproto = 'syntax = "proto3"; \npackage helloworld;\n';
+    fs.appendFile(rutaProto, headproto, (err) => {
+      if (err) throw err;
+      console.log('Cabezera insertada en proto/protofile.proto');
+      resolve();
+    });
+
+  })
 }
 
 //Insertar servicios de mongodb
@@ -288,14 +288,18 @@ const { dir } = require('console');
 async function generateSintax() {
   //generar sintaxis servicios en arhivo proto
  // console.log(0);
+ console.log(0);
   await delete_protofile();
+  console.log(1);
   await sintaxService();
+  console.log(2);
+
  // console.log(2);
   //generar sintaxis messages en arhivo proto
   await sintaxMessage();
-  console.log('eeey');
-  console.log(fs.existsSync(__dirname + '/proto/protofile.proto')  ) ;
-  var file_descriptor = fs.openSync(__dirname + '/proto/protofile.proto');
+  
+/*
+  var file_descriptor = fs.openSync(rutaProto);
   fs.close(file_descriptor, (err) => {
     if (err)
       console.error('Failed to close file', err);
@@ -303,13 +307,18 @@ async function generateSintax() {
       console.log("\n> File Closed successfully");
     }
   });
- // fs.close(__dirname + '/proto/protofile.proto');
-//  console.log(4);
- // await sleep(5000);
-  grpcs();
-  console.log(5);
-  console.dir(grpcServices);
+*/
+  console.log(3);
+ // console.log('eeey');
+//  console.log(fs.existsSync(__dirname + '/proto/protofile.proto')  ) ;
+
+  await grpcs();
+  console.log(4);
+
+ // console.log(5);
+ // console.dir(grpcServices);
 }
+
 generateSintax();
 
 async function sintaxService() {
@@ -335,14 +344,15 @@ async function sintaxService() {
           });
 
         });
-     //   console.log(1);
-        resolve();
+        setTimeout(() => {
+          resolve();
+        }, 4000);
       })
   })
 }
 
 async function sintaxMessage() {
-
+  return new Promise((resolve)=>{
   var messages_mongo = fetch('http://localhost:3000/get/allMessages');
 
   messages_mongo.then(datos => datos.json())
@@ -361,25 +371,45 @@ async function sintaxMessage() {
         var sintax = sintaxFirst + sintaxTypes + sintaxEnd;
         fs.appendFile(rutaProto, sintax, (err) => {
           if (err) throw err;
-          console.log('Message ' + message.name + ' añadido en proto/protofile.proto de mongodb');
-        });
-      })
+            console.log('Message ' + message.name + ' añadido en proto/protofile.proto de mongodb');
+          });
+        }); 
+        setTimeout(() => {
+          var file_descriptor = fs.openSync(rutaProto);
+          fs.close(file_descriptor, (err) => {
+            if (err)
+              console.error('Failed to close file', err);
+            else {
+              console.log("\n> File Closed successfully");
+            }
+          });
+          resolve();
+        }, 5000);
+      });
     })
-  //  console.log(3);
 }
 
 
+/*
+  var file_descriptor = fs.openSync(rutaProto);
 
+fs.close(file_descriptor, (err) => {
+  if (err)
+    console.error('Failed to close file', err);
+  else {
+    console.log("\n> File Closed successfully");
+  }
+});*/
 //GRPC
 //var PROTO_PATH = __dirname + '/proto/helloworld.proto';
 //hAY QUE ACCEDER A PROTOFILE PROTO
 var grpcServices = new Map();
 
 async function grpcs() {
+  return new Promise((resolve)=>{
 
-
-//  var PROTO_PATH = __dirname + '/proto/protofile.proto';
-var PROTO_PATH = __dirname + '/proto/helloworld.proto';
+ //   var PROTO_PATH = __dirname + '/proto/protofile.proto';
+  var PROTO_PATH = __dirname + '/proto/helloworld.proto';
 
 
   var grpc = require('@grpc/grpc-js');
@@ -394,25 +424,29 @@ var PROTO_PATH = __dirname + '/proto/helloworld.proto';
       oneofs: true
     });
 
- var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
 
- // var hello_proto = grpc.loadPackageDefinition(packageDefinition).protofile;
-  //console.dir(hello_proto);
   var services_mongo = fetch('http://localhost:3000/get/allServices');
-
   services_mongo.then((datos) => datos.json())
     .then((datos) => {
       //generar sintaxis servicios en arhivo proto
-      //POSIBLE 
-      console.log(datos);
-      datos.forEach(service => {
-        grpcServices['service' + service.name] = new hello_proto[`${service.name}`]('localhost:50051', grpc.credentials.createInsecure());
-
-      });
+    //  console.log(datos);
     //  console.log(4.4);
-    })
- //   console.log(4.5);
+      setTimeout(()=>{
+        console.log('heey');
+    
+     //   var hello_proto = grpc.loadPackageDefinition(packageDefinition).protofile;
+        var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
 
+        datos.forEach(service => {
+          grpcServices['service' + service.name] = new hello_proto[`${service.name}`]('localhost:50051', grpc.credentials.createInsecure());
+        });
+
+         console.log(grpcServices);
+        resolve();
+      }, 6000);
+
+    })
+  })
 }
 
 
@@ -435,9 +469,7 @@ app.post('/ejecuteService', function (req, res) {
    //   console.log('SERVIDOR NO CONECTADO');
     //  alert('SERVIDOR NO CONECTADO');
       console.log(err);
-     
       alert(err.details);
-
       
     } else {
       console.log(response);
@@ -450,6 +482,3 @@ app.post('/ejecuteService', function (req, res) {
 });
 
 
-function sleep(milliseconds) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-}
