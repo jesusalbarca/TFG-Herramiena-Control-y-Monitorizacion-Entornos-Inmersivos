@@ -5,7 +5,6 @@ const app = express();
 const server = require("http").Server(app);
 const fs = require('fs');
 
-
 app.set('view engine', 'ejs');
 
 
@@ -294,6 +293,7 @@ async function delete_protofile() {
 const fetch = require("node-fetch");
 const {resolve} = require('path');
 const {dir} = require('console');
+const grpc = require("@grpc/grpc-js");
 
 async function generateSintax() {
     //generar sintaxis servicios en arhivo proto
@@ -415,9 +415,9 @@ fs.close(file_descriptor, (err) => {
 //hAY QUE ACCEDER A PROTOFILE PROTO
 
 
-//CONFIGURATION ELEMENTS
+//CONFIGURATION ELEMENTS @alreylz
 let hostname = "localhost";
-let port = "50051";
+let grpcServerPort = "50051";
 
 
 var grpcServices = new Map();
@@ -440,7 +440,7 @@ async function grpcs() {
                 defaults: true,
                 oneofs: true
             });
-
+        var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
 
         var services_mongo = fetch('http://localhost:3000/get/allServices');
         services_mongo.then((datos) => datos.json())
@@ -451,11 +451,13 @@ async function grpcs() {
                 setTimeout(() => {
                     console.log('heey');
 
-                    //   var hello_proto = grpc.loadPackageDefinition(packageDefinition).protofile;
-                    var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
+
+                    console.log("@alreylz ----------------------------")
+                    console.log("Hello proto object")
+                    console.dir(hello_proto);
 
                     datos.forEach(service => {
-                        grpcServices['service' + service.name] = new hello_proto[`${service.name}`](`${hostname}:${port}`, grpc.credentials.createInsecure());
+                        grpcServices['service' + service.name] = new hello_proto[`${service.name}`](`${hostname}:${grpcServerPort}`, grpc.credentials.createInsecure());
                     });
 
                     console.log(grpcServices);
@@ -498,3 +500,30 @@ app.post('/ejecuteService', function (req, res) {
 });
 
 
+
+
+
+
+
+
+const protosPath = path.resolve(__dirname, 'proto');
+
+// DIRECTORIO DE PROTO FILES EXISTENTES
+app.get('/protos', async function (req, res) {
+
+    const files = await fs.promises.readdir(protosPath);
+    res.send(files);
+});
+
+// DESCARGA DE ARCHIVOS PROTO
+app.get('/protos/:name', async function (req, res) {
+
+    const files = await fs.promises.readdir(protosPath);
+    for (const f of files ){
+        console.log(f)
+    }
+    res.type(".proto")
+    // files.
+    // res.(req.params.name);
+    res.sendFile(path.resolve(protosPath,req.params.name));
+});
