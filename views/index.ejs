@@ -200,7 +200,9 @@
                         })
                     }
                 })
-                
+
+
+                //Aquí se generan los campos de input para el mensaje seleccionado actualmente!!!!!!
                 messages_ejs.forEach(message =>{
                     if(message.name==request){
                         message.types.forEach(msgtype =>{
@@ -228,6 +230,16 @@
                             newinput.setAttribute('class','form-control');
                             //ver si es int o tal 
                             newinput.setAttribute('name','nameAtrb[]');
+
+                            //[@alreylz]
+                            let newinputHidden = document.createElement('input');
+                            newinputHidden.setAttribute("name","tipo[]");
+                            newinputHidden.setAttribute("style","display:none;");
+                            let grpcDatatype = msgtype.tipo;
+                            newinputHidden.setAttribute("value",grpcDatatype)
+
+                            // newinput.setAttribute("data-datatype", grpcDatatype);
+
                             var placeholder = 'Type: ' + msgtype.tipo;
                             newinput.setAttribute('placeholder',placeholder);
                             if(msgtype.tipo=='int32'){
@@ -240,7 +252,7 @@
 
                             divrowmb3.appendChild(divcolsm8);
                             divrowmb3.appendChild(divcol);
-
+                            divrowmb3.appendChild(newinputHidden);// |added
                             
                         })
                     }

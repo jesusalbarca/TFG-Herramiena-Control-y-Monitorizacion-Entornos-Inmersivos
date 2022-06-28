@@ -1,53 +1,12 @@
 syntax = "proto3"; 
 package helloworld;
-service Greeter { 
-  rpc SayHello (HelloRequest) returns (HelloReply)  {}
-  rpc SayHelloAgain (HelloRequest) returns (HelloReply)  {}
-  rpc AddMessage (Request_message) returns (Response_message)  {}
-} 
-service Command { 
-  rpc LightsOn (Request) returns (Reply)  {}
-  rpc LightsOff (Request) returns (Reply)  {}
-  rpc MoveHome (Request) returns (Reply)  {}
-} 
-service GestionarNodos { 
-  rpc MostrarNodos (request_node) returns (reply_node)  {}
-} 
 service ServiceLights { 
-  rpc SetLightsByRoom (Request) returns (Reply)  {}
-} 
-service prueba { 
-  rpc rpc1 (Request) returns (reply)  {}
-} 
-message HelloReply {
-string message = 1; 
-} 
-message Request_message {
-string MessageType = 1; 
-string OpCode = 2; 
-string Dataa = 3; 
-string Options = 4; 
-} 
-message request_node {
-int32 numer_nodos = 1; 
-} 
-message HelloRequest {
-string name = 1; 
-} 
-message reply_node {
-bool isOkey = 1; 
-} 
-message reply {
-bool itsOkey = 1; 
-} 
-message Response_message {
-string message = 1; 
-} 
-message Reply {
-bool itsOkey = 1; 
+  rpc SetLights (Request) returns (Reply)  {}
 } 
 message Request {
-int32 intensity = 1; 
-int32 duration = 2; 
-string room = 3; 
+int32 idLight = 1; 
+bool Status = 2; 
+} 
+message Reply {
+string IsOk = 1; 
 } 

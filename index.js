@@ -259,7 +259,10 @@ app.get('/delete_service/:id/:name', function (req, res) {
 const path = require('path');
 
 //Elmina el archivo proto y lo vuelve a crear con la cabecera
-const rutaProto = path.resolve(__dirname, 'proto', 'protofile.proto');
+const rutaProto = path.resolve(__dirname, 'proto', 'protofile.proto'); // -> Archivo de salida (proto)
+
+let protoPackage = "helloworld";
+
 
 async function delete_protofile() {
 
@@ -279,7 +282,7 @@ async function delete_protofile() {
         } catch (error) {
             console.error('there was an error:', error.message);
         }
-        var headproto = 'syntax = "proto3"; \npackage helloworld;\n';
+        var headproto = 'syntax = "proto3"; \npackage ' + protoPackage + ';\n';
         fs.appendFile(rutaProto, headproto, (err) => {
             if (err) throw err;
             console.log('Cabezera insertada en proto/protofile.proto');
@@ -295,6 +298,12 @@ const {resolve} = require('path');
 const {dir} = require('console');
 const grpc = require("@grpc/grpc-js");
 
+
+// - Elimina el proto
+// - GEnera proto de BBDD
+// -> Escribe servicios
+// -> Escribe mensajes
+// - Crea el stub desde el archivo
 async function generateSintax() {
     //generar sintaxis servicios en arhivo proto
     // console.log(0);
@@ -420,13 +429,13 @@ let hostname = "localhost";
 let grpcServerPort = "50051";
 
 
-var grpcServices = new Map();
+var grpcServices = new Map(); // MApa de todos los servicios para poder ejecutarlos.
 
 async function grpcs() {
     return new Promise((resolve) => {
 
-        //   var PROTO_PATH = __dirname + '/proto/protofile.proto';
-        var PROTO_PATH = __dirname + '/proto/helloworld.proto';
+        var PROTO_PATH = __dirname + '/proto/protofile.proto';
+        // var PROTO_PATH = __dirname + '/proto/helloworld.proto';
 
 
         var grpc = require('@grpc/grpc-js');
@@ -440,7 +449,8 @@ async function grpcs() {
                 defaults: true,
                 oneofs: true
             });
-        var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
+        // var hello_proto = grpc.loadPackageDefinition(packageDefinition).helloworld;
+        var hello_proto = grpc.loadPackageDefinition(packageDefinition)[`${protoPackage}`];
 
         var services_mongo = fetch('http://localhost:3000/get/allServices');
         services_mongo.then((datos) => datos.json())
@@ -456,6 +466,8 @@ async function grpcs() {
                     console.log("Hello proto object")
                     console.dir(hello_proto);
 
+
+                    //service.name podría leerse del archivo
                     datos.forEach(service => {
                         grpcServices['service' + service.name] = new hello_proto[`${service.name}`](`${hostname}:${grpcServerPort}`, grpc.credentials.createInsecure());
                     });
@@ -468,19 +480,42 @@ async function grpcs() {
     })
 }
 
-
+//Al pulsar botón se llama a este endpoint
 app.post('/ejecuteService', function (req, res) {
     console.log(req.body);
-    var objRequest = {};
+    var objRequest = {}; // Contruimos los parámetros de la llamada remota
     var x = 0;
+
+
+    //typeAtrb es el nombre del parámetro
     req.body.typeAtrb.forEach(tipo => {
-        objRequest[`${tipo}`] = req.body.nameAtrb[x];
-        x++;
+        let valorParam = req.body.nameAtrb[x];
+
+        let tipoDeDatos = req.body["tipo"][x] ;
+        console.log("[@alreylz] TIPO DE DATOS!!! "+ tipoDeDatos);
+
+        switch (tipoDeDatos){
+            case "int32":
+                valorParam = Number(valorParam);
+                break;
+            case "bool":
+                if (valorParam === "False" || valorParam === "false" ) valorParam = false;
+                console.log("[@alreylz] detectado un tipo bool "+ valorParam);
+                break;
+
+        }
+
+        objRequest[`${tipo}`] = valorParam;
+
+            x++;
     })
-    console.log("----------------");
-    console.log(grpcServices);
+
+
+    // console.log("----------------");
+    // console.log(grpcServices);
     const grpcMethod = grpcServices['service' + req.body.ServiceChoose];
-    console.log(grpcMethod);
+    // console.log(grpcMethod);
+    console.log(`[@alreylz] Petición enviada:  `)
     console.log(objRequest);
     grpcMethod[`${req.body.grpcChoose}`](objRequest, function (err, response) {
         if (err != null) {
@@ -493,17 +528,11 @@ app.post('/ejecuteService', function (req, res) {
             console.log(response);
             console.log('Servidor:', response.message);
             alert(response + response.message);
-            res.redirect('/');
+            res.redirect('/ejecutar');
         }
     });
     //  console.log(res.body);
 });
-
-
-
-
-
-
 
 
 const protosPath = path.resolve(__dirname, 'proto');
@@ -519,11 +548,11 @@ app.get('/protos', async function (req, res) {
 app.get('/protos/:name', async function (req, res) {
 
     const files = await fs.promises.readdir(protosPath);
-    for (const f of files ){
+    for (const f of files) {
         console.log(f)
     }
     res.type(".proto")
     // files.
     // res.(req.params.name);
-    res.sendFile(path.resolve(protosPath,req.params.name));
+    res.sendFile(path.resolve(protosPath, req.params.name));
 });
