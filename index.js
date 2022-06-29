@@ -481,58 +481,79 @@ async function grpcs() {
 }
 
 //Al pulsar botón se llama a este endpoint
-app.post('/ejecuteService', function (req, res) {
-    console.log(req.body);
-    var objRequest = {}; // Contruimos los parámetros de la llamada remota
-    var x = 0;
+app.post('/ejecuteService', async function (req, res) {
 
 
-    //typeAtrb es el nombre del parámetro
-    req.body.typeAtrb.forEach(tipo => {
-        let valorParam = req.body.nameAtrb[x];
+        let needsRefresh = false;
 
-        let tipoDeDatos = req.body["tipo"][x] ;
-        console.log("[@alreylz] TIPO DE DATOS!!! "+ tipoDeDatos);
 
-        switch (tipoDeDatos){
-            case "int32":
-                valorParam = Number(valorParam);
-                break;
-            case "bool":
-                if (valorParam === "False" || valorParam === "false" ) valorParam = false;
-                console.log("[@alreylz] detectado un tipo bool "+ valorParam);
-                break;
 
+        if (hostname !== req.body.hostname && req.body.hostname !== null && req.body.hostname !== undefined && req.body.hostname !== "") {
+            hostname = req.body.hostname;
+            needsRefresh = true;
+        }
+        if (grpcServerPort !== req.body.port && req.body.port !== null && req.body.port !== undefined && req.body.port !== "") {
+            grpcServerPort = req.body.port;
+            needsRefresh = true;
         }
 
-        objRequest[`${tipo}`] = valorParam;
+        if (needsRefresh)
+            await grpcs();
+
+
+        console.log(req.body);
+        var objRequest = {}; // Contruimos los parámetros de la llamada remota
+        var x = 0;
+
+
+        //typeAtrb es el nombre del parámetro
+        req.body.typeAtrb.forEach(tipo => {
+            let valorParam = req.body.nameAtrb[x];
+
+            let tipoDeDatos = req.body["tipo"][x];
+            console.log("[@alreylz] TIPO DE DATOS!!! " + tipoDeDatos);
+
+            switch (tipoDeDatos) {
+                case "int32":
+                    valorParam = Number(valorParam);
+                    break;
+                case "bool":
+                    if (valorParam === "False" || valorParam === "false") valorParam = false;
+                    console.log("[@alreylz] detectado un tipo bool " + valorParam);
+                    break;
+
+            }
+
+            objRequest[`${tipo}`] = valorParam;
 
             x++;
-    })
+        })
 
 
-    // console.log("----------------");
-    // console.log(grpcServices);
-    const grpcMethod = grpcServices['service' + req.body.ServiceChoose];
-    // console.log(grpcMethod);
-    console.log(`[@alreylz] Petición enviada:  `)
-    console.log(objRequest);
-    grpcMethod[`${req.body.grpcChoose}`](objRequest, function (err, response) {
-        if (err != null) {
-            //   console.log('SERVIDOR NO CONECTADO');
-            //  alert('SERVIDOR NO CONECTADO');
-            console.log(err);
-            alert(err.details);
+        // console.log("----------------");
+        // console.log(grpcServices);
+        const grpcMethod = grpcServices['service' + req.body.ServiceChoose];
+        // console.log(grpcMethod);
+        console.log(`[@alreylz] Petición enviada:  `)
+        console.log(objRequest);
+        grpcMethod[`${req.body.grpcChoose}`](objRequest, function (err, response) {
+            if (err != null) {
+                //   console.log('SERVIDOR NO CONECTADO');
+                //  alert('SERVIDOR NO CONECTADO');
+                console.log(err);
+                alert(err.details);
 
-        } else {
-            console.log(response);
-            console.log('Servidor:', response.message);
-            alert(response + response.message);
-            res.redirect('/ejecutar');
-        }
-    });
-    //  console.log(res.body);
-});
+            } else {
+                console.log(response);
+                console.log('Servidor:', response.message);
+                alert(response + response.message);
+                res.redirect('/ejecutar');
+            }
+        });
+        //  console.log(res.body);
+    }
+)
+;
 
 
 const protosPath = path.resolve(__dirname, 'proto');
